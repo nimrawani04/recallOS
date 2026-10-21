@@ -19,7 +19,7 @@ function Graph() {
   const entities = useMemo(() => Array.from(new Set(memories.flatMap((m) => m.entities))), []);
   const [sel, setSel] = useState("API integration");
   const W = 640, H = 420, cx = W / 2, cy = H / 2;
-  const pos = Object.fromEntries(entities.map((e, i) => {
+  const pos: Record<string, { x: number; y: number }> = Object.fromEntries(entities.map((e, i) => {
     const a = (i / entities.length) * Math.PI * 2;
     return [e, { x: cx + Math.cos(a) * 170, y: cy + Math.sin(a) * 160 }];
   }));
