@@ -78,20 +78,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "RecallOS" },
+      { name: "description", content: "Evidence-backed personal memory agent." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -115,13 +110,37 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const nav = [
+  { to: "/", label: "Briefing" },
+  { to: "/ask", label: "Ask" },
+  { to: "/commitments", label: "Commitments" },
+  { to: "/graph", label: "Graph" },
+] as const;
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="min-h-screen">
+        <nav className="border-b">
+          <div className="mx-auto flex max-w-5xl items-center gap-6 px-6 py-4">
+            <Link to="/" className="font-mono text-sm font-bold tracking-wider">
+              RECALL<span className="text-primary">OS</span>
+            </Link>
+            <div className="flex gap-1 text-sm">
+              {nav.map((n) => (
+                <Link key={n.to} to={n.to} activeOptions={{ exact: true }} className="rounded px-3 py-1.5 text-muted-foreground hover:text-foreground" activeProps={{ className: "bg-accent text-foreground" }}>
+                  {n.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </nav>
+        <main className="mx-auto max-w-5xl px-6 py-10">
+          <Outlet />
+        </main>
+      </div>
     </QueryClientProvider>
   );
 }
