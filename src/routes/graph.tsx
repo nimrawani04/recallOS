@@ -32,12 +32,12 @@ function Graph() {
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-lg border bg-card">
           {edges.map((e, i) => {
             const on = e.a === sel || e.b === sel;
-            return <line key={i} x1={pos[e.a].x} y1={pos[e.a].y} x2={pos[e.b].x} y2={pos[e.b].y} stroke="currentColor" className={on ? "text-primary" : "text-border"} strokeWidth={on ? 1.6 : 1} />;
+            return <line key={i} x1={pos[e.a]!.x} y1={pos[e.a]!.y} x2={pos[e.b]!.x} y2={pos[e.b]!.y} stroke="currentColor" className={on ? "text-primary" : "text-border"} strokeWidth={on ? 1.6 : 1} />;
           })}
           {entities.map((e) => (
             <g key={e} onClick={() => setSel(e)} className="cursor-pointer">
-              <circle cx={pos[e].x} cy={pos[e].y} r={e === sel ? 9 : 6} fill="currentColor" className={e === sel ? "text-primary" : "text-muted-foreground"} />
-              <text x={pos[e].x} y={pos[e].y - 14} textAnchor="middle" fill="currentColor" className="text-foreground text-[12px]">{e}</text>
+              <circle cx={pos[e]!.x} cy={pos[e]!.y} r={e === sel ? 9 : 6} fill="currentColor" className={e === sel ? "text-primary" : "text-muted-foreground"} />
+              <text x={pos[e]!.x} y={pos[e]!.y - 14} textAnchor="middle" fill="currentColor" className="text-foreground text-[12px]">{e}</text>
             </g>
           ))}
         </svg>
