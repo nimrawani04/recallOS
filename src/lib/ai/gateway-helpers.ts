@@ -1,4 +1,4 @@
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createOpenAI } from "@ai-sdk/openai";
 
 import { createLovableAiGatewayRunIdFetch } from "./run-id.ts";
 export {
@@ -15,10 +15,9 @@ export function createLovableAiGatewayProvider(
 ) {
   const runIdFetch = createLovableAiGatewayRunIdFetch(initialRunId);
 
-  const provider = createOpenAICompatible({
-    name: "lovable",
+  const provider = createOpenAI({
+    apiKey: lovableApiKey,
     baseURL: `${options.baseURL.replace(/\/+$/, "").replace(/\/v1$/, "")}/v1`,
-    supportsStructuredOutputs: options?.structuredOutputs ?? false,
     headers: {
       "Lovable-API-Key": lovableApiKey,
       "X-Lovable-AIG-SDK": "vercel-ai-sdk",

@@ -86,7 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600&display=swap",
+      },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -110,37 +113,92 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { AccountProvider, useAccount } from "@/components/account";
+
 const nav = [
   { to: "/", label: "Briefing" },
-  { to: "/ask", label: "Ask" },
+  { to: "/alexa", label: "Alexa+ Sim", highlight: true },
+  { to: "/drift", label: "Drift Radar" },
+  { to: "/import", label: "Import" },
   { to: "/commitments", label: "Commitments" },
-  { to: "/graph", label: "Graph" },
+  { to: "/graph", label: "GraphRAG" },
+  { to: "/insights", label: "Insights" },
+  { to: "/consolidate", label: "Consolidate" },
+  { to: "/ask", label: "Ask" },
 ] as const;
+
+function UserNavStatus() {
+  const { session } = useAccount();
+  if (session?.user) {
+    return (
+      <span className="font-mono text-xs rounded-full border border-confirmed/40 bg-confirmed/10 px-2.5 py-1 text-confirmed">
+        ● {session.user.email?.split("@")[0] ?? "Signed In"}
+      </span>
+    );
+  }
+  return (
+    <Link
+      to="/import"
+      className="font-mono text-xs rounded-md border border-border px-2.5 py-1 text-muted-foreground hover:text-foreground"
+    >
+      Sign In
+    </Link>
+  );
+}
+
+import { MemoryStoreProvider } from "@/lib/memory-store";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen">
-        <nav className="border-b">
-          <div className="mx-auto flex max-w-5xl items-center gap-6 px-6 py-4">
-            <Link to="/" className="font-mono text-sm font-bold tracking-wider">
-              RECALL<span className="text-primary">OS</span>
-            </Link>
-            <div className="flex gap-1 text-sm">
-              {nav.map((n) => (
-                <Link key={n.to} to={n.to} activeOptions={{ exact: true }} className="rounded px-3 py-1.5 text-muted-foreground hover:text-foreground" activeProps={{ className: "bg-accent text-foreground" }}>
-                  {n.label}
-                </Link>
-              ))}
-            </div>
+      <AccountProvider>
+        <MemoryStoreProvider>
+          <div className="min-h-screen">
+            <nav className="border-b bg-card/40 backdrop-blur sticky top-0 z-50">
+              <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
+                <div className="flex items-center gap-6">
+                  <Link
+                    to="/"
+                    className="font-mono text-sm font-bold tracking-wider flex items-center gap-2"
+                  >
+                    <span>
+                      RECALL<span className="text-primary">OS</span>
+                    </span>
+                    <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-mono text-primary font-bold">
+                      MCP
+                    </span>
+                  </Link>
+                  <div className="flex flex-wrap gap-1 text-sm">
+                    {nav.map((n) => (
+                      <Link
+                        key={n.to}
+                        to={n.to}
+                        activeOptions={{ exact: true }}
+                        className={`rounded px-2.5 py-1 text-xs transition ${
+                          "highlight" in n && n.highlight
+                            ? "font-semibold text-primary hover:bg-primary/10"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                        activeProps={{ className: "bg-accent text-foreground font-medium" }}
+                      >
+                        {n.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <UserNavStatus />
+                </div>
+              </div>
+            </nav>
+            <main className="mx-auto max-w-5xl px-6 py-10">
+              <Outlet />
+            </main>
           </div>
-        </nav>
-        <main className="mx-auto max-w-5xl px-6 py-10">
-          <Outlet />
-        </main>
-      </div>
+        </MemoryStoreProvider>
+      </AccountProvider>
     </QueryClientProvider>
   );
 }

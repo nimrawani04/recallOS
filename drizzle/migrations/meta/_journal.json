@@ -8,6 +8,13 @@
       "when": 1792632664760,
       "tag": "0000_recallos_private_imports",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792632664761,
+      "tag": "0001_memory_operations",
+      "breakpoints": true
     }
   ]
 }

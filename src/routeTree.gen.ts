@@ -10,15 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlexaRouteImport } from './routes/alexa'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as CommitmentsRouteImport } from './routes/commitments'
+import { Route as ConsolidateRouteImport } from './routes/consolidate'
+import { Route as DriftRouteImport } from './routes/drift'
 import { Route as GraphRouteImport } from './routes/graph'
+import { Route as ImportRouteImport } from './routes/import'
+import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ApiExtractRouteImport } from './routes/api/extract'
+import { Route as ApiMcpRouteImport } from './routes/api/mcp'
 import { Route as MemoryIdRouteImport } from './routes/memory.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlexaRoute = AlexaRouteImport.update({
+  id: '/alexa',
+  path: '/alexa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AskRoute = AskRouteImport.update({
@@ -31,14 +42,39 @@ const CommitmentsRoute = CommitmentsRouteImport.update({
   path: '/commitments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsolidateRoute = ConsolidateRouteImport.update({
+  id: '/consolidate',
+  path: '/consolidate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriftRoute = DriftRouteImport.update({
+  id: '/drift',
+  path: '/drift',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GraphRoute = GraphRouteImport.update({
   id: '/graph',
   path: '/graph',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImportRoute = ImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiExtractRoute = ApiExtractRouteImport.update({
   id: '/api/extract',
   path: '/api/extract',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMcpRoute = ApiMcpRouteImport.update({
+  id: '/api/mcp',
+  path: '/api/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MemoryIdRoute = MemoryIdRouteImport.update({
@@ -49,51 +85,104 @@ const MemoryIdRoute = MemoryIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alexa': typeof AlexaRoute
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
+  '/consolidate': typeof ConsolidateRoute
+  '/drift': typeof DriftRoute
   '/graph': typeof GraphRoute
+  '/import': typeof ImportRoute
+  '/insights': typeof InsightsRoute
   '/api/extract': typeof ApiExtractRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/memory/$id': typeof MemoryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alexa': typeof AlexaRoute
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
+  '/consolidate': typeof ConsolidateRoute
+  '/drift': typeof DriftRoute
   '/graph': typeof GraphRoute
+  '/import': typeof ImportRoute
+  '/insights': typeof InsightsRoute
   '/api/extract': typeof ApiExtractRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/memory/$id': typeof MemoryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alexa': typeof AlexaRoute
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
+  '/consolidate': typeof ConsolidateRoute
+  '/drift': typeof DriftRoute
   '/graph': typeof GraphRoute
+  '/import': typeof ImportRoute
+  '/insights': typeof InsightsRoute
   '/api/extract': typeof ApiExtractRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/memory/$id': typeof MemoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/ask' | '/commitments' | '/graph' | '/api/extract' | '/memory/$id'
+    | '/'
+    | '/alexa'
+    | '/ask'
+    | '/commitments'
+    | '/consolidate'
+    | '/drift'
+    | '/graph'
+    | '/import'
+    | '/insights'
+    | '/api/extract'
+    | '/api/mcp'
+    | '/memory/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ask' | '/commitments' | '/graph' | '/api/extract' | '/memory/$id'
+  to:
+    | '/'
+    | '/alexa'
+    | '/ask'
+    | '/commitments'
+    | '/consolidate'
+    | '/drift'
+    | '/graph'
+    | '/import'
+    | '/insights'
+    | '/api/extract'
+    | '/api/mcp'
+    | '/memory/$id'
   id:
     | '__root__'
     | '/'
+    | '/alexa'
     | '/ask'
     | '/commitments'
+    | '/consolidate'
+    | '/drift'
     | '/graph'
+    | '/import'
+    | '/insights'
     | '/api/extract'
+    | '/api/mcp'
     | '/memory/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlexaRoute: typeof AlexaRoute
   AskRoute: typeof AskRoute
   CommitmentsRoute: typeof CommitmentsRoute
+  ConsolidateRoute: typeof ConsolidateRoute
+  DriftRoute: typeof DriftRoute
   GraphRoute: typeof GraphRoute
+  ImportRoute: typeof ImportRoute
+  InsightsRoute: typeof InsightsRoute
   ApiExtractRoute: typeof ApiExtractRoute
+  ApiMcpRoute: typeof ApiMcpRoute
   MemoryIdRoute: typeof MemoryIdRoute
 }
 
@@ -104,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alexa': {
+      id: '/alexa'
+      path: '/alexa'
+      fullPath: '/alexa'
+      preLoaderRoute: typeof AlexaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ask': {
@@ -120,6 +216,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommitmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consolidate': {
+      id: '/consolidate'
+      path: '/consolidate'
+      fullPath: '/consolidate'
+      preLoaderRoute: typeof ConsolidateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drift': {
+      id: '/drift'
+      path: '/drift'
+      fullPath: '/drift'
+      preLoaderRoute: typeof DriftRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/graph': {
       id: '/graph'
       path: '/graph'
@@ -127,11 +237,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GraphRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/import': {
+      id: '/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof ImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/extract': {
       id: '/api/extract'
       path: '/api/extract'
       fullPath: '/api/extract'
       preLoaderRoute: typeof ApiExtractRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/mcp': {
+      id: '/api/mcp'
+      path: '/api/mcp'
+      fullPath: '/api/mcp'
+      preLoaderRoute: typeof ApiMcpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/memory/$id': {
@@ -146,10 +277,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlexaRoute: AlexaRoute,
   AskRoute: AskRoute,
   CommitmentsRoute: CommitmentsRoute,
+  ConsolidateRoute: ConsolidateRoute,
+  DriftRoute: DriftRoute,
   GraphRoute: GraphRoute,
+  ImportRoute: ImportRoute,
+  InsightsRoute: InsightsRoute,
   ApiExtractRoute: ApiExtractRoute,
+  ApiMcpRoute: ApiMcpRoute,
   MemoryIdRoute: MemoryIdRoute,
 }
 export const routeTree = rootRouteImport
