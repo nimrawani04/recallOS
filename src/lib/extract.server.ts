@@ -70,7 +70,7 @@ export async function handleExtraction(request: Request): Promise<Response> {
         send({ type: "error", status: request.signal.aborted ? 499 : upstreamError?.status ?? 502, error: upstreamError?.message ?? (error instanceof Error ? error.message : "No supported extraction was returned.") });
       } finally { controller.close(); }
     },
-    cancel: () => iterator.return?.(),
+    cancel: async () => { await iterator.return?.(); },
   });
   const headers = new Headers({ "Content-Type": "application/x-ndjson", "Cache-Control": "no-store" });
   const runId = gateway.getRunId();
