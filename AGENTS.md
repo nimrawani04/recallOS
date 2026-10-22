@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Conversation extraction uses server-only AI Gateway helpers and owner-scoped saved imports so personal conversations remain private.
+- MCP tools read the same saved imports through caller-scoped RLS; the Alexa+ simulation is an OAuth MCP client, not a physical device integration.

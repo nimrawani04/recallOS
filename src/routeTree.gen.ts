@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as CommitmentsRouteImport } from './routes/commitments'
 import { Route as GraphRouteImport } from './routes/graph'
+import { Route as ApiExtractRouteImport } from './routes/api/extract'
 import { Route as MemoryIdRouteImport } from './routes/memory.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const GraphRoute = GraphRouteImport.update({
   path: '/graph',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiExtractRoute = ApiExtractRouteImport.update({
+  id: '/api/extract',
+  path: '/api/extract',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MemoryIdRoute = MemoryIdRouteImport.update({
   id: '/memory/$id',
   path: '/memory/$id',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
   '/graph': typeof GraphRoute
+  '/api/extract': typeof ApiExtractRoute
   '/memory/$id': typeof MemoryIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
   '/graph': typeof GraphRoute
+  '/api/extract': typeof ApiExtractRoute
   '/memory/$id': typeof MemoryIdRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,23 @@ export interface FileRoutesById {
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
   '/graph': typeof GraphRoute
+  '/api/extract': typeof ApiExtractRoute
   '/memory/$id': typeof MemoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ask' | '/commitments' | '/graph' | '/memory/$id'
+  fullPaths:
+    '/' | '/ask' | '/commitments' | '/graph' | '/api/extract' | '/memory/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ask' | '/commitments' | '/graph' | '/memory/$id'
-  id: '__root__' | '/' | '/ask' | '/commitments' | '/graph' | '/memory/$id'
+  to: '/' | '/ask' | '/commitments' | '/graph' | '/api/extract' | '/memory/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/ask'
+    | '/commitments'
+    | '/graph'
+    | '/api/extract'
+    | '/memory/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +93,7 @@ export interface RootRouteChildren {
   AskRoute: typeof AskRoute
   CommitmentsRoute: typeof CommitmentsRoute
   GraphRoute: typeof GraphRoute
+  ApiExtractRoute: typeof ApiExtractRoute
   MemoryIdRoute: typeof MemoryIdRoute
 }
 
@@ -109,6 +127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GraphRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/extract': {
+      id: '/api/extract'
+      path: '/api/extract'
+      fullPath: '/api/extract'
+      preLoaderRoute: typeof ApiExtractRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/memory/$id': {
       id: '/memory/$id'
       path: '/memory/$id'
@@ -124,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   AskRoute: AskRoute,
   CommitmentsRoute: CommitmentsRoute,
   GraphRoute: GraphRoute,
+  ApiExtractRoute: ApiExtractRoute,
   MemoryIdRoute: MemoryIdRoute,
 }
 export const routeTree = rootRouteImport
