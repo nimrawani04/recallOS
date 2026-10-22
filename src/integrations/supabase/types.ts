@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_access_state: {
+        Row: {
+          id: string
+          message: string
+          status: number
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          message: string
+          status: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          message?: string
+          status?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      conversation_imports: {
+        Row: {
+          conversation: string
+          created_at: string
+          extraction: Json
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          conversation: string
+          created_at?: string
+          extraction: Json
+          id?: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          conversation?: string
+          created_at?: string
+          extraction?: Json
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
