@@ -1,30 +1,17 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { getMemory, type Memory } from "@/lib/memory";
+import { type Memory } from "@/lib/memory";
 import { useMemoryStore } from "@/lib/memory-store";
 import { Evidence, PageHead, StatusPill } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/memory/$id")({
   loader: ({ params }) => {
-    const staticM = getMemory(params.id);
-    if (staticM) return staticM;
-
-    // Fallback stub for client-side hydration
-    const placeholder: Memory = {
-      id: params.id,
-      kind: "fact",
-      title: "Loading memory...",
-      status: "unknown",
-      confidence: 1.0,
-      sources: [],
-      entities: [],
-    };
-    return placeholder;
+    return { id: params.id };
   },
-  head: ({ loaderData }) => ({
+  head: () => ({
     meta: [
-      { title: `${loaderData?.title ?? "Memory"} — RecallOS` },
+      { title: "Memory Detail — RecallOS" },
       { name: "description", content: "Source passages, history and confidence for this memory." },
-      { property: "og:title", content: `${loaderData?.title ?? "Memory"} — RecallOS` },
+      { property: "og:title", content: "Memory Detail — RecallOS" },
       {
         property: "og:description",
         content: "Evidence and change history behind a RecallOS memory.",
@@ -35,11 +22,9 @@ export const Route = createFileRoute("/memory/$id")({
 });
 
 function MemoryPage() {
-  const loaderData = Route.useLoaderData();
   const { id } = Route.useParams();
   const { getMemory: getStoreMemory, isLoading } = useMemoryStore();
-  const m: Memory | undefined =
-    getStoreMemory(id) ?? (loaderData.title !== "Loading memory..." ? loaderData : undefined);
+  const m: Memory | undefined = getStoreMemory(id);
 
   if (!m && isLoading) {
     return <p className="text-sm text-muted-foreground">Loading owner-scoped memory…</p>;

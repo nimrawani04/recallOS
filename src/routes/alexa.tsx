@@ -2,8 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { PageHead, StatusPill, Evidence } from "@/components/ui-bits";
 import { runWebMCPTool } from "@/lib/webmcp-telemetry";
-import { driftEvents } from "@/lib/temporal-drift";
-import { memories, briefing, sources } from "@/lib/memory";
 import { useAccount } from "@/components/account";
 import { useMemoryStore } from "@/lib/memory-store";
 

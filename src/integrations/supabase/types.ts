@@ -14,6 +14,177 @@ export type Database = {
   }
   public: {
     Tables: {
+      briefing_items: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          level: string
+          memory_id: string
+          sort_order: number
+          title: string
+          why: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id: string
+          level: string
+          memory_id: string
+          sort_order?: number
+          title: string
+          why: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          level?: string
+          memory_id?: string
+          sort_order?: number
+          title?: string
+          why?: string
+        }
+        Relationships: []
+      }
+      drift_chart_metrics: {
+        Row: {
+          alignment: number
+          created_at: string
+          day: string
+          divergence: number
+          id: string
+          risk_level: number
+          sort_order: number
+        }
+        Insert: {
+          alignment: number
+          created_at?: string
+          day: string
+          divergence: number
+          id: string
+          risk_level: number
+          sort_order?: number
+        }
+        Update: {
+          alignment?: number
+          created_at?: string
+          day?: string
+          divergence?: number
+          id?: string
+          risk_level?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      drift_events: {
+        Row: {
+          created_at: string
+          earlier_claim: Json
+          explanation: string
+          id: string
+          later_claim: Json
+          recommended_action: string
+          severity: string
+          sort_order: number
+          topic: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          earlier_claim: Json
+          explanation: string
+          id: string
+          later_claim: Json
+          recommended_action: string
+          severity: string
+          sort_order?: number
+          topic: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          earlier_claim?: Json
+          explanation?: string
+          id?: string
+          later_claim?: Json
+          recommended_action?: string
+          severity?: string
+          sort_order?: number
+          topic?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      memories: {
+        Row: {
+          confidence: number
+          created_at: string
+          entities: Json
+          history: Json | null
+          id: string
+          kind: string
+          note: string | null
+          sources: Json
+          status: string
+          title: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          entities?: Json
+          history?: Json | null
+          id: string
+          kind: string
+          note?: string | null
+          sources?: Json
+          status: string
+          title: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          entities?: Json
+          history?: Json | null
+          id?: string
+          kind?: string
+          note?: string | null
+          sources?: Json
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      memory_sources: {
+        Row: {
+          channel: string
+          created_at: string
+          day: string
+          id: string
+          passage: string
+          speaker: string
+          time: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          day: string
+          id: string
+          passage: string
+          speaker: string
+          time: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          day?: string
+          id?: string
+          passage?: string
+          speaker?: string
+          time?: string
+        }
+        Relationships: []
+      }
       ai_access_state: {
         Row: {
           id: string

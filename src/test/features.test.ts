@@ -3,8 +3,11 @@ import { applyAmbientGuard } from "@/lib/ambient-guard";
 import { detectMentalModelDrift } from "@/lib/temporal-drift";
 import { executeMCPTool, handleMCPRequest, MCP_TOOLS } from "@/lib/mcp.server";
 import { buildDataset, makeMemoryChart, rankMemories } from "@/lib/memory-engine";
+import { createTestDataset, testMemories, testDriftEvents } from "./fixtures";
 
 describe("RecallOS Core Capabilities", () => {
+  const testDataset = createTestDataset();
+
   describe("Ambient Guard Privacy Filter", () => {
     it("redacts API keys, credentials, and ambient background chatter", () => {
       const input =
@@ -21,7 +24,7 @@ describe("RecallOS Core Capabilities", () => {
 
   describe("Temporal Drift & Supersession Detection", () => {
     it("detects deadline supersession and unverified assumptions", () => {
-      const events = detectMentalModelDrift();
+      const events = detectMentalModelDrift(testMemories, testDriftEvents);
       expect(events.length).toBeGreaterThanOrEqual(2);
 
       const deadlineDrift = events.find((e) => e.type === "deadline_shift");
@@ -45,7 +48,11 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("executes recall_query_memories and returns verbatim evidence quotes", async () => {
-      const res = (await executeMCPTool("recall_query_memories", { query: "deadline" })) as {
+      const res = (await executeMCPTool(
+        "recall_query_memories",
+        { query: "deadline" },
+        testDataset,
+      )) as {
         count: number;
         results: Array<{ supportingEvidence: Array<{ passage: string }> }>;
       };
@@ -56,7 +63,11 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("executes recall_check_commitments with explicit vs tentative distinction", async () => {
-      const res = (await executeMCPTool("recall_check_commitments", { person: "You" })) as {
+      const res = (await executeMCPTool(
+        "recall_check_commitments",
+        { person: "You" },
+        testDataset,
+      )) as {
         total: number;
         commitments: Array<{ certainty: string; title: string }>;
       };
@@ -68,9 +79,13 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("does not return unrelated records when a query has no match", async () => {
-      const res = (await executeMCPTool("recall_query_memories", {
-        query: "quantum submarine launch",
-      })) as {
+      const res = (await executeMCPTool(
+        "recall_query_memories",
+        {
+          query: "quantum submarine launch",
+        },
+        testDataset,
+      )) as {
         count: number;
         grounded: boolean;
         evidenceOutcome: string;
@@ -84,9 +99,9 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("rejects an empty query instead of dumping the owner vault", async () => {
-      await expect(executeMCPTool("recall_query_memories", { query: "   " })).rejects.toThrow(
-        "query is required",
-      );
+      await expect(
+        executeMCPTool("recall_query_memories", { query: "   " }, testDataset),
+      ).rejects.toThrow("query is required");
       const privateDataset = buildDataset([], { includeDemo: false });
       const res = (await executeMCPTool(
         "recall_query_memories",
@@ -99,20 +114,25 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("keeps relevance, evidence, and facts-checked charts separate", () => {
-      const dataset = buildDataset();
-      const results = rankMemories("demo deadline", dataset);
-      const chart = makeMemoryChart(dataset, "status");
+      const results = rankMemories("demo deadline", testDataset);
+      const chart = makeMemoryChart(testDataset, "status");
 
       expect(results[0]!.score).toBeGreaterThan(0);
       expect(results[0]!.citations.length).toBeGreaterThan(0);
       expect(chart.factsChecked).toBe(true);
-      expect(chart.data.reduce((sum, point) => sum + point.value, 0)).toBe(dataset.memories.length);
+      expect(chart.data.reduce((sum, point) => sum + point.value, 0)).toBe(
+        testDataset.memories.length,
+      );
     });
 
     it("bounds the multi-tool agent turn and preserves evidence-only fallback wording", async () => {
-      const res = (await executeMCPTool("recall_agent_turn", {
-        utterance: "Why is the demo at risk and what did I promise?",
-      })) as {
+      const res = (await executeMCPTool(
+        "recall_agent_turn",
+        {
+          utterance: "Why is the demo at risk and what did I promise?",
+        },
+        testDataset,
+      )) as {
         maxToolCalls: number;
         toolsUsed: string[];
         grounded: boolean;
@@ -139,9 +159,13 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("executes recall_export_handoff (KindHandoff protocol)", async () => {
-      const res = (await executeMCPTool("recall_export_handoff", {
-        targetRole: "Project Lead",
-      })) as {
+      const res = (await executeMCPTool(
+        "recall_export_handoff",
+        {
+          targetRole: "Project Lead",
+        },
+        testDataset,
+      )) as {
         handoffProtocol: string;
         urgencyScore: number;
         verifiedFacts: Array<{ title: string }>;
@@ -154,7 +178,11 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("executes recall_schedule_followup (Yasmin/Hearthbeat retention)", async () => {
-      const res = (await executeMCPTool("recall_schedule_followup", { person: "You" })) as {
+      const res = (await executeMCPTool(
+        "recall_schedule_followup",
+        { person: "You" },
+        testDataset,
+      )) as {
         scheduler: string;
         triggers: Array<{ due: string; prompt: string }>;
       };
@@ -165,7 +193,7 @@ describe("RecallOS Core Capabilities", () => {
     });
 
     it("executes recall_get_core_memory_blocks (Letta/Mem0 tiered memory)", async () => {
-      const res = (await executeMCPTool("recall_get_core_memory_blocks")) as {
+      const res = (await executeMCPTool("recall_get_core_memory_blocks", {}, testDataset)) as {
         framework: string;
         coreBlocks: Array<{ block: string; pinned: boolean }>;
       };

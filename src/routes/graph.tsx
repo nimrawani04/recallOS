@@ -20,7 +20,7 @@ export const Route = createFileRoute("/graph")({
 const TIMELINE_DAYS = ["All", "Mon", "Tue", "Wed"] as const;
 
 function TemporalGraphRAG() {
-  const { memories, importCount } = useMemoryStore();
+  const { memories, sources, importCount } = useMemoryStore();
   const [selectedDay, setSelectedDay] = useState<(typeof TIMELINE_DAYS)[number]>("All");
   const [sel, setSel] = useState("API integration");
   const [targetHop, setTargetHop] = useState<string>("Final demo");
@@ -28,15 +28,13 @@ function TemporalGraphRAG() {
   // Filter memories by temporal day if selected
   const filteredMemories = useMemo(() => {
     if (selectedDay === "All") return memories;
-    // Map memories to days based on their source IDs
-    const dayMap: Record<string, string[]> = {
-      Mon: ["s1", "s2", "s3"],
-      Tue: ["s4", "s5"],
-      Wed: ["s6", "s7"],
-    };
-    const validSources = dayMap[selectedDay] ?? [];
-    return memories.filter((m) => m.sources.some((s) => validSources.includes(s)));
-  }, [memories, selectedDay]);
+    const validSourceIds = new Set(
+      sources
+        .filter((s) => s.day.toLowerCase().startsWith(selectedDay.toLowerCase()))
+        .map((s) => s.id),
+    );
+    return memories.filter((m) => m.sources.some((s) => validSourceIds.has(s)));
+  }, [memories, sources, selectedDay]);
 
   const entities = useMemo(
     () => Array.from(new Set(filteredMemories.flatMap((m) => m.entities))),

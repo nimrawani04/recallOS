@@ -15,6 +15,20 @@
       "when": 1792632664761,
       "tag": "0001_memory_operations",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792632664762,
+      "tag": "0002_provider_connections",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792632664763,
+      "tag": "0003_memory_baseline",
+      "breakpoints": true
     }
   ]
 }

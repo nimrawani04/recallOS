@@ -1,12 +1,12 @@
-import {
-  briefing as demoBriefing,
-  memories as demoMemories,
-  sources as demoSources,
-  type Briefing,
-  type Memory,
-  type Source,
-} from "./memory";
-import { driftEvents as demoDriftEvents, type DriftEvent } from "./temporal-drift";
+import { type Briefing, type Memory, type Source } from "./memory";
+import { type DriftEvent } from "./temporal-drift";
+
+export type BaselineMemoryData = {
+  memories?: Memory[];
+  sources?: Source[];
+  briefing?: Briefing[];
+  driftEvents?: DriftEvent[];
+};
 
 export type StoredImport = {
   id: string;
@@ -70,6 +70,7 @@ const STOP_WORDS = new Set([
   "which",
   "with",
   "your",
+  "team",
 ]);
 
 function words(value: string) {
@@ -128,14 +129,23 @@ function importedMemory(
 
 export function buildDataset(
   imports: StoredImport[] = [],
-  options: { includeDemo?: boolean } = {},
+  baselineOrOptions?: BaselineMemoryData | { includeDemo?: boolean },
 ): MemoryDataset {
   const imported = imports.flatMap((row) =>
     row.extraction.memories.map((item, index) => importedMemory(item, row, index)),
   );
-  const includeDemo = options.includeDemo !== false;
-  const memories = [...(includeDemo ? demoMemories : []), ...imported.map((item) => item.memory)];
-  const sources = [...(includeDemo ? demoSources : []), ...imported.map((item) => item.source)];
+  const baseline: BaselineMemoryData =
+    baselineOrOptions && !("includeDemo" in baselineOrOptions)
+      ? (baselineOrOptions as BaselineMemoryData)
+      : {};
+
+  const baselineMemories = baseline.memories ?? [];
+  const baselineSources = baseline.sources ?? [];
+  const baselineBriefing = baseline.briefing ?? [];
+  const baselineDriftEvents = baseline.driftEvents ?? [];
+
+  const memories = [...baselineMemories, ...imported.map((item) => item.memory)];
+  const sources = [...baselineSources, ...imported.map((item) => item.source)];
   const importedBriefing: Briefing[] = imported.flatMap(({ memory }) => {
     if (memory.kind === "question") {
       return [
@@ -165,8 +175,8 @@ export function buildDataset(
   return {
     memories,
     sources,
-    briefing: [...(includeDemo ? demoBriefing : []), ...importedBriefing],
-    driftEvents: includeDemo ? demoDriftEvents : [],
+    briefing: [...baselineBriefing, ...importedBriefing],
+    driftEvents: baselineDriftEvents,
     importCount: imports.length,
   };
 }

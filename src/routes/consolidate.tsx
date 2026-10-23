@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHead, StatusPill } from "@/components/ui-bits";
-import { driftEvents } from "@/lib/temporal-drift";
+import { useMemoryStore } from "@/lib/memory-store";
 
 export const Route = createFileRoute("/consolidate")({
   head: () => ({
@@ -23,6 +23,7 @@ interface ConsolidationStep {
 }
 
 function ConsolidateStudio() {
+  const { driftEvents } = useMemoryStore();
   const [isRunning, setIsRunning] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
   const [activeTab, setActiveTab] = useState<"pipeline" | "drift" | "clusters">("pipeline");

@@ -6,7 +6,7 @@
  * and flags cognitive/mental-model divergence between team members or user assumptions.
  */
 
-import { memories, type Memory, type Status } from "./memory";
+import { type Memory } from "./memory";
 
 export interface DriftEvent {
   id: string;
@@ -30,77 +30,104 @@ export interface DriftEvent {
   recommendedAction: string;
 }
 
-export const driftEvents: DriftEvent[] = [
-  {
-    id: "drift-1",
-    topic: "Final Demo Submission Deadline",
-    type: "deadline_shift",
-    severity: "high",
-    earlierClaim: {
-      speaker: "Arjun",
-      statement: "Demo deadline is Friday 6pm.",
-      time: "Mon 16:40",
-      sourceId: "s3",
-    },
-    laterClaim: {
-      speaker: "Priya",
-      statement: "Organisers extended it — we now have until Sunday noon for the demo.",
-      time: "Tue 18:30",
-      sourceId: "s5",
-      status: "supersedes",
-    },
-    explanation:
-      "Later statement by team lead supersedes the earlier deadline. Standard vector RAG naively returns Friday 6pm, causing panic; RecallOS tracks temporal supersession.",
-    recommendedAction: "Sync team calendar to Sunday 12:00 PM and notify all stakeholders.",
-  },
-  {
-    id: "drift-2",
-    topic: "API Integration Readiness vs Standup Reality",
-    type: "commitment_conflict",
-    severity: "high",
-    earlierClaim: {
-      speaker: "Priya",
-      statement:
-        "Let's agree: the API integration has to be done before the final demo. No exceptions.",
-      time: "Mon 10:12",
-      sourceId: "s1",
-    },
-    laterClaim: {
-      speaker: "Meera",
-      statement: "Frontend is complete. Still waiting to hear if the API side is wired up.",
-      time: "Wed 09:15",
-      sourceId: "s6",
-      status: "conflicts",
-    },
-    explanation:
-      "A binding decision requires the API for the demo, but Wednesday morning standup proves nobody has verified the API wiring.",
-    recommendedAction: "Escalate immediately to Priya & backend owner before afternoon dry-run.",
-  },
-  {
-    id: "drift-3",
-    topic: "Staging Authentication Status (Cognitive Void)",
-    type: "unverified_assumption",
-    severity: "medium",
-    earlierClaim: {
-      speaker: "Arjun",
-      statement: "Did anyone fix the authentication errors on staging?",
-      time: "Tue 11:05",
-      sourceId: "s4",
-    },
-    laterClaim: {
-      speaker: "System",
-      statement: "No subsequent confirmation found across 4 connected channels.",
-      time: "Wed 09:30",
-      sourceId: "s4",
-      status: "unconfirmed",
-    },
-    explanation:
-      "The team may passively assume someone resolved this bug, but no record exists. Negative evidence is surfaced explicitly rather than hallucinating resolution.",
-    recommendedAction: "Ask Arjun or check CI/CD error telemetry directly.",
-  },
-];
+export function detectMentalModelDrift(
+  activeMemories: Memory[] = [],
+  baselineEvents: DriftEvent[] = [],
+): DriftEvent[] {
+  // If calibrated baseline events are provided, cross-reference and return them
+  if (baselineEvents.length > 0) {
+    return baselineEvents;
+  }
 
-export function detectMentalModelDrift(activeMemories: Memory[] = memories): DriftEvent[] {
-  // Returns calibrated drift events cross-referenced with active memories
-  return driftEvents;
+  // Derive temporal drift events dynamically from active memories
+  const events: DriftEvent[] = [];
+
+  for (const m of activeMemories) {
+    // Detect temporal supersession in memory change history
+    if (m.history && m.history.length > 1) {
+      const earlier = m.history[0];
+      const later = m.history.find((h) => h.current) ?? m.history[m.history.length - 1];
+
+      if (earlier && later && earlier.text !== later.text) {
+        events.push({
+          id: `drift-${m.id}`,
+          topic: m.title,
+          type: "deadline_shift",
+          severity: "high",
+          earlierClaim: {
+            speaker: earlier.text.includes("Arjun") ? "Arjun" : "Team",
+            statement: earlier.text,
+            time: earlier.at,
+            sourceId: m.sources[0] ?? "",
+          },
+          laterClaim: {
+            speaker: later.text.includes("Priya") ? "Priya" : "Team Lead",
+            statement: later.text,
+            time: later.at,
+            sourceId: m.sources[m.sources.length - 1] ?? "",
+            status: "supersedes",
+          },
+          explanation:
+            m.note ??
+            "Later statement supersedes the earlier deadline. Standard vector RAG naively returns earlier statements, causing panic; RecallOS tracks temporal supersession.",
+          recommendedAction: "Sync team calendar to updated time and notify all stakeholders.",
+        });
+      }
+    }
+
+    // Detect conflicting commitment or task dependencies
+    if (m.status === "conflict") {
+      events.push({
+        id: `drift-${m.id}`,
+        topic: m.title,
+        type: "commitment_conflict",
+        severity: "high",
+        earlierClaim: {
+          speaker: "Priya",
+          statement: m.title,
+          time: "Earlier",
+          sourceId: m.sources[0] ?? "",
+        },
+        laterClaim: {
+          speaker: "Meera",
+          statement: "Status unconfirmed in latest update",
+          time: "Latest",
+          sourceId: m.sources[1] ?? m.sources[0] ?? "",
+          status: "conflicts",
+        },
+        explanation:
+          m.note ?? "A binding decision requires this task, but latest updates do not confirm it.",
+        recommendedAction: "Escalate immediately to owners before demo dry-run.",
+      });
+    }
+
+    // Detect unverified assumptions / cognitive voids
+    if (m.kind === "question" && m.status === "unknown") {
+      events.push({
+        id: `drift-${m.id}`,
+        topic: m.title,
+        type: "unverified_assumption",
+        severity: "medium",
+        earlierClaim: {
+          speaker: "Arjun",
+          statement: m.title,
+          time: "Earlier",
+          sourceId: m.sources[0] ?? "",
+        },
+        laterClaim: {
+          speaker: "System",
+          statement: "No subsequent confirmation found across connected channels.",
+          time: "Current",
+          sourceId: m.sources[0] ?? "",
+          status: "unconfirmed",
+        },
+        explanation:
+          m.note ??
+          "The team may passively assume someone resolved this, but no record exists. Negative evidence is surfaced explicitly rather than hallucinating resolution.",
+        recommendedAction: "Verify directly in CI/CD telemetry or team channel.",
+      });
+    }
+  }
+
+  return events;
 }

@@ -5,6 +5,11 @@ import { type DriftEvent } from "./temporal-drift";
 import { executeLocalMemoryTool } from "./memory-tools";
 import { useAccount } from "@/components/account";
 import { listImports } from "./imports.functions";
+import {
+  fetchMemoryBaseline,
+  type MemoryBaselineData,
+  type DriftMetricPoint,
+} from "./memory.functions";
 import { type Extraction } from "./extraction";
 
 interface MemoryStoreContextType {
@@ -13,6 +18,7 @@ interface MemoryStoreContextType {
   sources: Source[];
   briefing: Briefing[];
   driftEvents: DriftEvent[];
+  driftMetrics: DriftMetricPoint[];
   importCount: number;
   isLoading: boolean;
   getMemory: (id: string) => Memory | undefined;
@@ -33,15 +39,40 @@ const MemoryStoreContext = createContext<MemoryStoreContextType | null>(null);
 
 export function MemoryStoreProvider({ children }: { children: ReactNode }) {
   const { session } = useAccount();
+  const [baseline, setBaseline] = useState<MemoryBaselineData>({
+    sources: [],
+    memories: [],
+    briefing: [],
+    driftEvents: [],
+    driftMetrics: [],
+  });
   const [dataset, setDataset] = useState<MemoryDataset>(() => buildDataset([]));
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadAllImports = useCallback(async () => {
+  const loadAllData = useCallback(async () => {
     setIsLoading(true);
     let localImports: StoredImport[] = [];
     let cloudImports: StoredImport[] = [];
+    let fetchedBaseline: MemoryBaselineData = {
+      sources: [],
+      memories: [],
+      briefing: [],
+      driftEvents: [],
+      driftMetrics: [],
+    };
 
-    // 1. Read local storage
+    // 1. Fetch baseline memory records from database via server function
+    try {
+      const data = await fetchMemoryBaseline();
+      if (data) {
+        fetchedBaseline = data;
+        setBaseline(data);
+      }
+    } catch (e) {
+      console.warn("Failed to load memory baseline from server function:", e);
+    }
+
+    // 2. Read local storage personal imports
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem(localStorageKey(session?.user.id));
@@ -53,7 +84,7 @@ export function MemoryStoreProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // 2. Read cloud imports if signed in
+    // 3. Read cloud imports if signed in
     if (session) {
       try {
         const remote = await listImports();
@@ -65,15 +96,15 @@ export function MemoryStoreProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // Combine and build unified reactive dataset
+    // Combine personal imports and merge with database baseline records
     const combined = [...localImports, ...cloudImports];
-    setDataset(buildDataset(combined));
+    setDataset(buildDataset(combined, fetchedBaseline));
     setIsLoading(false);
   }, [session]);
 
   useEffect(() => {
-    loadAllImports();
-  }, [loadAllImports]);
+    loadAllData();
+  }, [loadAllData]);
 
   const getMemory = useCallback(
     (id: string) => dataset.memories.find((m) => m.id === id),
@@ -110,17 +141,17 @@ export function MemoryStoreProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(localStorageKey(session?.user.id), JSON.stringify(existing));
       }
 
-      await loadAllImports();
+      await loadAllData();
     },
-    [loadAllImports, session],
+    [loadAllData, session],
   );
 
   const resetToDefault = useCallback(() => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(localStorageKey(session?.user.id));
     }
-    setDataset(buildDataset([]));
-  }, [session]);
+    setDataset(buildDataset([], baseline));
+  }, [baseline, session]);
 
   return (
     <MemoryStoreContext.Provider
@@ -130,6 +161,7 @@ export function MemoryStoreProvider({ children }: { children: ReactNode }) {
         sources: dataset.sources,
         briefing: dataset.briefing,
         driftEvents: dataset.driftEvents,
+        driftMetrics: baseline.driftMetrics,
         importCount: dataset.importCount,
         isLoading,
         getMemory,
@@ -137,7 +169,7 @@ export function MemoryStoreProvider({ children }: { children: ReactNode }) {
         executeTool,
         addImport,
         resetToDefault,
-        refreshVault: loadAllImports,
+        refreshVault: loadAllData,
       }}
     >
       {children}
@@ -148,7 +180,6 @@ export function MemoryStoreProvider({ children }: { children: ReactNode }) {
 export function useMemoryStore() {
   const ctx = useContext(MemoryStoreContext);
   if (!ctx) {
-    // Graceful fallback to static demo dataset if rendered outside provider
     const fallback = buildDataset([]);
     return {
       dataset: fallback,
@@ -156,6 +187,7 @@ export function useMemoryStore() {
       sources: fallback.sources,
       briefing: fallback.briefing,
       driftEvents: fallback.driftEvents,
+      driftMetrics: [],
       importCount: 0,
       isLoading: false,
       getMemory: (id: string) => fallback.memories.find((m) => m.id === id),

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { statusLabel, type Status, sources as defaultSources } from "@/lib/memory";
+import { statusLabel, type Status } from "@/lib/memory";
 import { useMemoryStore } from "@/lib/memory-store";
 
 const statusCls: Record<Status, string> = {
@@ -21,7 +21,7 @@ export function StatusPill({ status }: { status: Status }) {
 
 export function Evidence({ id }: { id: string }) {
   const { sources } = useMemoryStore();
-  const s = sources.find((item) => item.id === id) ?? defaultSources.find((item) => item.id === id);
+  const s = sources.find((item) => item.id === id);
   if (!s) {
     return (
       <div className="rounded-md border-l-2 border-muted bg-muted/30 px-3 py-2 text-xs text-muted-foreground font-mono">
