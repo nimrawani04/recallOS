@@ -34,7 +34,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
 export function SignIn({ next }: { next?: string }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  async function signIn(provider: "google" | "lovable") {
+  async function signIn(provider: "google") {
     setBusy(true);
     setError("");
     sessionStorage.setItem(
@@ -58,11 +58,8 @@ export function SignIn({ next }: { next?: string }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-3">
-        <Button variant="outline" disabled={busy} onClick={() => signIn("google")}>
+        <Button disabled={busy} onClick={() => signIn("google")}>
           Continue with Google
-        </Button>
-        <Button className="lovable-auth-button" disabled={busy} onClick={() => signIn("lovable")}>
-          Continue with Lovable
         </Button>
       </div>
       {error && (
