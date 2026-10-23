@@ -14,13 +14,21 @@ import { Route as AlexaRouteImport } from './routes/alexa'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as CommitmentsRouteImport } from './routes/commitments'
 import { Route as ConsolidateRouteImport } from './routes/consolidate'
+import { Route as DevicesRouteImport } from './routes/devices'
 import { Route as DriftRouteImport } from './routes/drift'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ImportRouteImport } from './routes/import'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as AlexaLinkRouteImport } from './routes/alexa/link'
 import { Route as ApiExtractRouteImport } from './routes/api/extract'
 import { Route as ApiMcpRouteImport } from './routes/api/mcp'
 import { Route as MemoryIdRouteImport } from './routes/memory.$id'
+import { Route as ApiAlexaAuthorizeRouteImport } from './routes/api/alexa/authorize'
+import { Route as ApiAlexaSmarthomeRouteImport } from './routes/api/alexa/smarthome'
+import { Route as ApiAlexaTokenRouteImport } from './routes/api/alexa/token'
+import { Route as ApiRingLinkRouteImport } from './routes/api/ring/link'
+import { Route as ApiRingTokenExchangeRouteImport } from './routes/api/ring/token-exchange'
+import { Route as ApiRingWebhookRouteImport } from './routes/api/ring/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -47,6 +55,11 @@ const ConsolidateRoute = ConsolidateRouteImport.update({
   path: '/consolidate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevicesRoute = DevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DriftRoute = DriftRouteImport.update({
   id: '/drift',
   path: '/drift',
@@ -67,6 +80,11 @@ const InsightsRoute = InsightsRouteImport.update({
   path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlexaLinkRoute = AlexaLinkRouteImport.update({
+  id: '/link',
+  path: '/link',
+  getParentRoute: () => AlexaRoute,
+} as any)
 const ApiExtractRoute = ApiExtractRouteImport.update({
   id: '/api/extract',
   path: '/api/extract',
@@ -82,49 +100,103 @@ const MemoryIdRoute = MemoryIdRouteImport.update({
   path: '/memory/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAlexaAuthorizeRoute = ApiAlexaAuthorizeRouteImport.update({
+  id: '/api/alexa/authorize',
+  path: '/api/alexa/authorize',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAlexaSmarthomeRoute = ApiAlexaSmarthomeRouteImport.update({
+  id: '/api/alexa/smarthome',
+  path: '/api/alexa/smarthome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAlexaTokenRoute = ApiAlexaTokenRouteImport.update({
+  id: '/api/alexa/token',
+  path: '/api/alexa/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRingLinkRoute = ApiRingLinkRouteImport.update({
+  id: '/api/ring/link',
+  path: '/api/ring/link',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRingTokenExchangeRoute = ApiRingTokenExchangeRouteImport.update({
+  id: '/api/ring/token-exchange',
+  path: '/api/ring/token-exchange',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRingWebhookRoute = ApiRingWebhookRouteImport.update({
+  id: '/api/ring/webhook',
+  path: '/api/ring/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/alexa': typeof AlexaRoute
+  '/alexa': typeof AlexaRouteWithChildren
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
   '/consolidate': typeof ConsolidateRoute
+  '/devices': typeof DevicesRoute
   '/drift': typeof DriftRoute
   '/graph': typeof GraphRoute
   '/import': typeof ImportRoute
   '/insights': typeof InsightsRoute
+  '/alexa/link': typeof AlexaLinkRoute
   '/api/extract': typeof ApiExtractRoute
   '/api/mcp': typeof ApiMcpRoute
   '/memory/$id': typeof MemoryIdRoute
+  '/api/alexa/authorize': typeof ApiAlexaAuthorizeRoute
+  '/api/alexa/smarthome': typeof ApiAlexaSmarthomeRoute
+  '/api/alexa/token': typeof ApiAlexaTokenRoute
+  '/api/ring/link': typeof ApiRingLinkRoute
+  '/api/ring/token-exchange': typeof ApiRingTokenExchangeRoute
+  '/api/ring/webhook': typeof ApiRingWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/alexa': typeof AlexaRoute
+  '/alexa': typeof AlexaRouteWithChildren
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
   '/consolidate': typeof ConsolidateRoute
+  '/devices': typeof DevicesRoute
   '/drift': typeof DriftRoute
   '/graph': typeof GraphRoute
   '/import': typeof ImportRoute
   '/insights': typeof InsightsRoute
+  '/alexa/link': typeof AlexaLinkRoute
   '/api/extract': typeof ApiExtractRoute
   '/api/mcp': typeof ApiMcpRoute
   '/memory/$id': typeof MemoryIdRoute
+  '/api/alexa/authorize': typeof ApiAlexaAuthorizeRoute
+  '/api/alexa/smarthome': typeof ApiAlexaSmarthomeRoute
+  '/api/alexa/token': typeof ApiAlexaTokenRoute
+  '/api/ring/link': typeof ApiRingLinkRoute
+  '/api/ring/token-exchange': typeof ApiRingTokenExchangeRoute
+  '/api/ring/webhook': typeof ApiRingWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/alexa': typeof AlexaRoute
+  '/alexa': typeof AlexaRouteWithChildren
   '/ask': typeof AskRoute
   '/commitments': typeof CommitmentsRoute
   '/consolidate': typeof ConsolidateRoute
+  '/devices': typeof DevicesRoute
   '/drift': typeof DriftRoute
   '/graph': typeof GraphRoute
   '/import': typeof ImportRoute
   '/insights': typeof InsightsRoute
+  '/alexa/link': typeof AlexaLinkRoute
   '/api/extract': typeof ApiExtractRoute
   '/api/mcp': typeof ApiMcpRoute
   '/memory/$id': typeof MemoryIdRoute
+  '/api/alexa/authorize': typeof ApiAlexaAuthorizeRoute
+  '/api/alexa/smarthome': typeof ApiAlexaSmarthomeRoute
+  '/api/alexa/token': typeof ApiAlexaTokenRoute
+  '/api/ring/link': typeof ApiRingLinkRoute
+  '/api/ring/token-exchange': typeof ApiRingTokenExchangeRoute
+  '/api/ring/webhook': typeof ApiRingWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -134,13 +206,21 @@ export interface FileRouteTypes {
     | '/ask'
     | '/commitments'
     | '/consolidate'
+    | '/devices'
     | '/drift'
     | '/graph'
     | '/import'
     | '/insights'
+    | '/alexa/link'
     | '/api/extract'
     | '/api/mcp'
     | '/memory/$id'
+    | '/api/alexa/authorize'
+    | '/api/alexa/smarthome'
+    | '/api/alexa/token'
+    | '/api/ring/link'
+    | '/api/ring/token-exchange'
+    | '/api/ring/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -148,13 +228,21 @@ export interface FileRouteTypes {
     | '/ask'
     | '/commitments'
     | '/consolidate'
+    | '/devices'
     | '/drift'
     | '/graph'
     | '/import'
     | '/insights'
+    | '/alexa/link'
     | '/api/extract'
     | '/api/mcp'
     | '/memory/$id'
+    | '/api/alexa/authorize'
+    | '/api/alexa/smarthome'
+    | '/api/alexa/token'
+    | '/api/ring/link'
+    | '/api/ring/token-exchange'
+    | '/api/ring/webhook'
   id:
     | '__root__'
     | '/'
@@ -162,21 +250,30 @@ export interface FileRouteTypes {
     | '/ask'
     | '/commitments'
     | '/consolidate'
+    | '/devices'
     | '/drift'
     | '/graph'
     | '/import'
     | '/insights'
+    | '/alexa/link'
     | '/api/extract'
     | '/api/mcp'
     | '/memory/$id'
+    | '/api/alexa/authorize'
+    | '/api/alexa/smarthome'
+    | '/api/alexa/token'
+    | '/api/ring/link'
+    | '/api/ring/token-exchange'
+    | '/api/ring/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AlexaRoute: typeof AlexaRoute
+  AlexaRoute: typeof AlexaRouteWithChildren
   AskRoute: typeof AskRoute
   CommitmentsRoute: typeof CommitmentsRoute
   ConsolidateRoute: typeof ConsolidateRoute
+  DevicesRoute: typeof DevicesRoute
   DriftRoute: typeof DriftRoute
   GraphRoute: typeof GraphRoute
   ImportRoute: typeof ImportRoute
@@ -184,6 +281,12 @@ export interface RootRouteChildren {
   ApiExtractRoute: typeof ApiExtractRoute
   ApiMcpRoute: typeof ApiMcpRoute
   MemoryIdRoute: typeof MemoryIdRoute
+  ApiAlexaAuthorizeRoute: typeof ApiAlexaAuthorizeRoute
+  ApiAlexaSmarthomeRoute: typeof ApiAlexaSmarthomeRoute
+  ApiAlexaTokenRoute: typeof ApiAlexaTokenRoute
+  ApiRingLinkRoute: typeof ApiRingLinkRoute
+  ApiRingTokenExchangeRoute: typeof ApiRingTokenExchangeRoute
+  ApiRingWebhookRoute: typeof ApiRingWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -223,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsolidateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/devices': {
+      id: '/devices'
+      path: '/devices'
+      fullPath: '/devices'
+      preLoaderRoute: typeof DevicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drift': {
       id: '/drift'
       path: '/drift'
@@ -251,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alexa/link': {
+      id: '/alexa/link'
+      path: '/link'
+      fullPath: '/alexa/link'
+      preLoaderRoute: typeof AlexaLinkRouteImport
+      parentRoute: typeof AlexaRoute
+    }
     '/api/extract': {
       id: '/api/extract'
       path: '/api/extract'
@@ -272,15 +389,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MemoryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/alexa/authorize': {
+      id: '/api/alexa/authorize'
+      path: '/api/alexa/authorize'
+      fullPath: '/api/alexa/authorize'
+      preLoaderRoute: typeof ApiAlexaAuthorizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/alexa/smarthome': {
+      id: '/api/alexa/smarthome'
+      path: '/api/alexa/smarthome'
+      fullPath: '/api/alexa/smarthome'
+      preLoaderRoute: typeof ApiAlexaSmarthomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/alexa/token': {
+      id: '/api/alexa/token'
+      path: '/api/alexa/token'
+      fullPath: '/api/alexa/token'
+      preLoaderRoute: typeof ApiAlexaTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ring/link': {
+      id: '/api/ring/link'
+      path: '/api/ring/link'
+      fullPath: '/api/ring/link'
+      preLoaderRoute: typeof ApiRingLinkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ring/token-exchange': {
+      id: '/api/ring/token-exchange'
+      path: '/api/ring/token-exchange'
+      fullPath: '/api/ring/token-exchange'
+      preLoaderRoute: typeof ApiRingTokenExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ring/webhook': {
+      id: '/api/ring/webhook'
+      path: '/api/ring/webhook'
+      fullPath: '/api/ring/webhook'
+      preLoaderRoute: typeof ApiRingWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AlexaRouteChildren {
+  AlexaLinkRoute: typeof AlexaLinkRoute
+}
+
+const AlexaRouteChildren: AlexaRouteChildren = {
+  AlexaLinkRoute: AlexaLinkRoute,
+}
+
+const AlexaRouteWithChildren = AlexaRoute._addFileChildren(AlexaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AlexaRoute: AlexaRoute,
+  AlexaRoute: AlexaRouteWithChildren,
   AskRoute: AskRoute,
   CommitmentsRoute: CommitmentsRoute,
   ConsolidateRoute: ConsolidateRoute,
+  DevicesRoute: DevicesRoute,
   DriftRoute: DriftRoute,
   GraphRoute: GraphRoute,
   ImportRoute: ImportRoute,
@@ -288,6 +458,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiExtractRoute: ApiExtractRoute,
   ApiMcpRoute: ApiMcpRoute,
   MemoryIdRoute: MemoryIdRoute,
+  ApiAlexaAuthorizeRoute: ApiAlexaAuthorizeRoute,
+  ApiAlexaSmarthomeRoute: ApiAlexaSmarthomeRoute,
+  ApiAlexaTokenRoute: ApiAlexaTokenRoute,
+  ApiRingLinkRoute: ApiRingLinkRoute,
+  ApiRingTokenExchangeRoute: ApiRingTokenExchangeRoute,
+  ApiRingWebhookRoute: ApiRingWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

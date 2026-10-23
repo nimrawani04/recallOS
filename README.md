@@ -49,6 +49,7 @@ reviewable evidence system:
 | `/insights`     | Facts-first charts for memory type, status, and source channel                                                                                    |
 | `/consolidate`  | Transparent “Machine Dream” consolidation pipeline that preserves unresolved claims                                                               |
 | `/alexa`        | Alexa+ / Echo Show-style visual client, real protected MCP calls when signed in, offline fallback, voice input, speech output, and tool inspector |
+| `/devices`      | Authenticated Alexa account linking, Ring Appstore linking, AWS EventBridge status, server-side device discovery, and anchor-device selection |
 | `POST /api/mcp` | JSON-RPC MCP tools, resources, prompts, structured content, authentication, export, deletion, and bounded agent turns                             |
 
 ## MCP surface
@@ -188,21 +189,45 @@ SUPABASE_URL=...
 SUPABASE_PUBLISHABLE_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=... # server-only; required for deletion receipts
 LOVABLE_API_KEY=...
+PROVIDER_TOKEN_ENCRYPTION_KEY=... # server-only; 32-byte AES-256-GCM key
+APP_BASE_URL=https://your-domain.example
+RING_CLIENT_ID=...
+RING_CLIENT_SECRET=... # server-only
+RING_HMAC_SIGNING_KEY=... # server-only
+RING_APPSTORE_URL=...
+AWS_REGION=...
+AWS_EVENT_BUS_NAME=...
+AWS_ACCESS_KEY_ID=... # server-only
+AWS_SECRET_ACCESS_KEY=... # server-only
+ALEXA_SKILL_ID=...
+ALEXA_ACCOUNT_LINKING_CLIENT_ID=...
+ALEXA_ACCOUNT_LINKING_CLIENT_SECRET=... # server-only
+ALEXA_ALLOWED_REDIRECT_URIS=...
 ```
 
 Never commit `.env`, access tokens, service-role keys, or raw private
 transcripts. The server-only extraction route uses the AI Gateway and stores no
-provider conversation state by default.
+provider conversation state by default. Copy `.env.example` to configure the
+provider integration; never put Ring, Alexa, AWS, or encryption secrets in a
+`VITE_*` variable.
 
 ### Database migration
 
 Apply the ordered SQL migrations in `drizzle/migrations/` to the connected
 Supabase project (`0000_recallos_private_imports.sql` first, then
-`0001_memory_operations.sql`). They create:
+`0001_memory_operations.sql`, then `0002_provider_connections.sql`). They create:
 
 - `conversation_imports` — redacted, owner-scoped source imports;
 - `ai_access_state` — server-side extraction availability state; and
-- `memory_operations` — owner-scoped deletion receipts/idempotency records.
+- `memory_operations` — owner-scoped deletion receipts/idempotency records;
+- `provider_connections` and `provider_connection_secrets` — owner-scoped
+  links, with encrypted Ring tokens kept out of authenticated reads;
+- `provider_link_claims` — short-lived, service-only Ring Appstore claims;
+- `smart_home_devices` and `device_setups` — normalized devices and the
+  selected anchor device;
+- `provider_webhook_events` — service-only Ring webhook idempotency records;
+- `alexa_oauth_requests` and `alexa_tokens` — Alexa account-linking state and
+  hashed Alexa access tokens.
 
 The migration enables RLS and restricts reads/writes to the authenticated
 owner. The MCP server still derives the caller from the bearer token; it never
@@ -267,8 +292,9 @@ ideas that fit this product's evidence and privacy model:
 
 - The `/alexa` page is an Alexa+/Echo Show **client simulation**. It can call
   RecallOS's protected MCP endpoint, but this repository does not claim a
-  physical Echo device, Alexa Skills Kit Lambda, AVS integration, or Amazon
-  account-linking approval.
+  physical Echo device or AVS integration. The `/devices` route contains the
+  server-side Alexa Smart Home account-linking and discovery endpoints, which
+  require an approved Alexa skill and configured credentials.
 - The MCP handler is a small JSON-RPC/HTTP adapter designed for this TanStack
   Start deployment. It implements discovery, initialization, tools, resources,
   prompts, structured results, and bearer protection; it is not a replacement
@@ -282,6 +308,48 @@ ideas that fit this product's evidence and privacy model:
 - A real production deployment should add OAuth 2.1/PKCE authorization-server
   metadata, narrow MCP scopes, rate limiting, session revocation, and an
   audited background consolidation worker.
+
+### Live Alexa / Ring / AWS integration
+
+The `/devices` flow uses the official integration boundaries instead of
+localStorage fixtures:
+
+```text
+Alexa Smart Home account linking
+        |
+        v
+RecallOS owner account -- Ring Appstore linking -- Ring Partner API
+        |                                      |
+        +-------- normalized device rows <-----+
+                             |
+                             v
+                  Ring HMAC webhook -> EventBridge
+```
+
+Ring uses the official Appstore-first one-way account-linking flow. Ring sends
+the authorization code to the server-only token-exchange endpoint; the user is
+returned to the server account-link endpoint with a signed nonce; and RecallOS
+claims the encrypted token only after the signed-in owner verifies that nonce.
+Ring API calls are server-to-server and include the required `Hardware_Id` and
+application `User-Agent` headers. Ring access and refresh tokens are encrypted
+with AES-256-GCM before they are written to
+`provider_connection_secrets`.
+
+Alexa account linking uses the configured RecallOS authorization and token
+endpoints. Alexa receives only a short-lived opaque access token; its hash is
+stored server-side. Alexa discovery returns the owner's normalized Ring
+endpoints and health state.
+
+Ring webhooks are verified with the Ring HMAC signing key, deduplicated in
+`provider_webhook_events`, and published to the configured AWS EventBridge bus
+using a server-side SigV4 request. AWS credentials are never sent to the
+browser.
+
+Before enabling this in production, create the Ring Partner app, Alexa Smart
+Home skill/account-linking settings, AWS EventBridge bus and IAM permission,
+HTTPS callback URLs, and the Supabase migration. The app intentionally shows a
+configuration error rather than inventing devices when required provider
+settings are missing.
 
 ## Reference repositories and licensing
 

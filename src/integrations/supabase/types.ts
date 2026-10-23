@@ -83,6 +83,303 @@ export type Database = {
         };
         Relationships: [];
       };
+      provider_connections: {
+        Row: {
+          id: string;
+          user_id: string;
+          provider: string;
+          external_account_id: string;
+          display_name: string;
+          hardware_id: string;
+          status: string;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+          revoked_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          provider: string;
+          external_account_id: string;
+          display_name: string;
+          hardware_id?: string;
+          status?: string;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+          revoked_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          provider?: string;
+          external_account_id?: string;
+          display_name?: string;
+          hardware_id?: string;
+          status?: string;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+          revoked_at?: string | null;
+        };
+        Relationships: [];
+      };
+      provider_connection_secrets: {
+        Row: {
+          connection_id: string;
+          access_token: string;
+          refresh_token: string;
+          token_expires_at: string | null;
+          scopes: Json;
+          key_version: number;
+          updated_at: string;
+        };
+        Insert: {
+          connection_id: string;
+          access_token: string;
+          refresh_token: string;
+          token_expires_at?: string | null;
+          scopes?: Json;
+          key_version?: number;
+          updated_at?: string;
+        };
+        Update: {
+          connection_id?: string;
+          access_token?: string;
+          refresh_token?: string;
+          token_expires_at?: string | null;
+          scopes?: Json;
+          key_version?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      provider_link_claims: {
+        Row: {
+          id: string;
+          provider: string;
+          external_account_id: string;
+          access_token: string;
+          refresh_token: string;
+          token_expires_at: string | null;
+          scopes: Json;
+          hardware_id: string;
+          metadata: Json;
+          expires_at: string;
+          claimed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider: string;
+          external_account_id: string;
+          access_token: string;
+          refresh_token: string;
+          token_expires_at?: string | null;
+          scopes?: Json;
+          hardware_id: string;
+          metadata?: Json;
+          expires_at?: string;
+          claimed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          provider?: string;
+          external_account_id?: string;
+          access_token?: string;
+          refresh_token?: string;
+          token_expires_at?: string | null;
+          scopes?: Json;
+          hardware_id?: string;
+          metadata?: Json;
+          expires_at?: string;
+          claimed_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      smart_home_devices: {
+        Row: {
+          id: string;
+          user_id: string;
+          connection_id: string;
+          provider: string;
+          external_device_id: string;
+          name: string;
+          kind: string;
+          model: string;
+          location: string;
+          status: string;
+          capabilities: Json;
+          metadata: Json;
+          last_seen_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          connection_id: string;
+          provider: string;
+          external_device_id: string;
+          name: string;
+          kind: string;
+          model?: string;
+          location?: string;
+          status?: string;
+          capabilities?: Json;
+          metadata?: Json;
+          last_seen_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          connection_id?: string;
+          provider?: string;
+          external_device_id?: string;
+          name?: string;
+          kind?: string;
+          model?: string;
+          location?: string;
+          status?: string;
+          capabilities?: Json;
+          metadata?: Json;
+          last_seen_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      device_setups: {
+        Row: {
+          user_id: string;
+          selected_device_id: string | null;
+          status: string;
+          completed_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          user_id?: string;
+          selected_device_id?: string | null;
+          status?: string;
+          completed_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          selected_device_id?: string | null;
+          status?: string;
+          completed_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      provider_webhook_events: {
+        Row: {
+          provider: string;
+          event_id: string;
+          event_type: string;
+          payload: Json;
+          published_at: string | null;
+          received_at: string;
+        };
+        Insert: {
+          provider: string;
+          event_id: string;
+          event_type: string;
+          payload: Json;
+          published_at?: string | null;
+          received_at?: string;
+        };
+        Update: {
+          provider?: string;
+          event_id?: string;
+          event_type?: string;
+          payload?: Json;
+          published_at?: string | null;
+          received_at?: string;
+        };
+        Relationships: [];
+      };
+      alexa_oauth_requests: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          client_id: string;
+          redirect_uri: string;
+          state: string;
+          scope: string;
+          code_hash: string | null;
+          expires_at: string;
+          code_expires_at: string | null;
+          completed_at: string | null;
+          consumed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          user_id?: string | null;
+          client_id: string;
+          redirect_uri: string;
+          state: string;
+          scope: string;
+          code_hash?: string | null;
+          expires_at: string;
+          code_expires_at?: string | null;
+          completed_at?: string | null;
+          consumed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          client_id?: string;
+          redirect_uri?: string;
+          state?: string;
+          scope?: string;
+          code_hash?: string | null;
+          expires_at?: string;
+          code_expires_at?: string | null;
+          completed_at?: string | null;
+          consumed_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      alexa_tokens: {
+        Row: {
+          id: string;
+          user_id: string;
+          client_id: string;
+          access_token_hash: string;
+          scopes: Json;
+          expires_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          client_id: string;
+          access_token_hash: string;
+          scopes?: Json;
+          expires_at: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          client_id?: string;
+          access_token_hash?: string;
+          scopes?: Json;
+          expires_at?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

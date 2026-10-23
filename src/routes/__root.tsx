@@ -117,6 +117,7 @@ import { AccountProvider, useAccount } from "@/components/account";
 
 const nav = [
   { to: "/", label: "Briefing" },
+  { to: "/devices", label: "Connect", highlight: true },
   { to: "/alexa", label: "Alexa+ Sim", highlight: true },
   { to: "/drift", label: "Drift Radar" },
   { to: "/import", label: "Import" },
@@ -170,7 +171,7 @@ function RootComponent() {
                       MCP
                     </span>
                   </Link>
-                  <div className="flex flex-wrap gap-1 text-sm">
+                  <div className="hidden flex-wrap gap-1 text-sm md:flex">
                     {nav.map((n) => (
                       <Link
                         key={n.to}
@@ -188,7 +189,35 @@ function RootComponent() {
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <details className="group relative md:hidden">
+                    <summary className="list-none cursor-pointer rounded-full border border-border bg-card/60 px-2.5 py-1.5 font-mono text-[10px] text-muted-foreground transition hover:text-foreground [&::-webkit-details-marker]:hidden">
+                      Menu
+                    </summary>
+                    <div className="absolute right-0 top-full z-50 mt-2 grid min-w-44 gap-1 rounded-xl border border-border bg-card p-2 shadow-2xl">
+                      {nav.map((n) => (
+                        <Link
+                          key={n.to}
+                          to={n.to}
+                          activeOptions={{ exact: true }}
+                          className="rounded-lg px-3 py-2 text-xs text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                          activeProps={{
+                            className:
+                              "rounded-lg bg-accent px-3 py-2 text-xs font-medium text-foreground",
+                          }}
+                        >
+                          {n.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </details>
+                  <Link
+                    to="/devices"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1.5 font-mono text-[10px] font-semibold text-primary transition hover:bg-primary/20 md:hidden"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Connect
+                  </Link>
                   <UserNavStatus />
                 </div>
               </div>

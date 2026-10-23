@@ -14,4 +14,19 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("registers the mobile device setup flow", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const matches = router.matchRoutes("/devices");
+
+    expect(matches.at(-1)?.routeId).toBe("/devices");
+  });
+
+  it("registers provider account-linking callback screens", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    expect(router.matchRoutes("/alexa/link").at(-1)?.routeId).toBe("/alexa/link");
+    expect(router.matchRoutes("/api/ring/webhook").at(-1)?.routeId).toBe("/api/ring/webhook");
+  });
 });
