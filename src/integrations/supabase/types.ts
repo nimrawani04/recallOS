@@ -35,6 +35,81 @@ export type Database = {
         }
         Relationships: []
       }
+      alexa_oauth_requests: {
+        Row: {
+          client_id: string
+          code_expires_at: string | null
+          code_hash: string | null
+          completed_at: string | null
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          redirect_uri: string
+          scope: string
+          state: string
+          user_id: string | null
+        }
+        Insert: {
+          client_id: string
+          code_expires_at?: string | null
+          code_hash?: string | null
+          completed_at?: string | null
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id: string
+          redirect_uri: string
+          scope: string
+          state: string
+          user_id?: string | null
+        }
+        Update: {
+          client_id?: string
+          code_expires_at?: string | null
+          code_hash?: string | null
+          completed_at?: string | null
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          redirect_uri?: string
+          scope?: string
+          state?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      alexa_tokens: {
+        Row: {
+          access_token_hash: string
+          client_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          scopes: Json
+          user_id: string
+        }
+        Insert: {
+          access_token_hash: string
+          client_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          scopes?: Json
+          user_id: string
+        }
+        Update: {
+          access_token_hash?: string
+          client_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          scopes?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       conversation_imports: {
         Row: {
           conversation: string
@@ -61,6 +136,279 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      device_setups: {
+        Row: {
+          completed_at: string | null
+          selected_device_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          selected_device_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          completed_at?: string | null
+          selected_device_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_setups_selected_device_id_fkey"
+            columns: ["selected_device_id"]
+            isOneToOne: false
+            referencedRelation: "smart_home_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_operations: {
+        Row: {
+          created_at: string
+          id: string
+          operation: string
+          payload: Json
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          operation: string
+          payload: Json
+          request_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          operation?: string
+          payload?: Json
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      provider_connection_secrets: {
+        Row: {
+          access_token: string
+          connection_id: string
+          key_version: number
+          refresh_token: string
+          scopes: Json
+          token_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          connection_id: string
+          key_version?: number
+          refresh_token: string
+          scopes?: Json
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          connection_id?: string
+          key_version?: number
+          refresh_token?: string
+          scopes?: Json
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_connection_secrets_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: true
+            referencedRelation: "provider_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_connections: {
+        Row: {
+          created_at: string
+          display_name: string
+          external_account_id: string
+          hardware_id: string
+          id: string
+          metadata: Json
+          provider: string
+          revoked_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          external_account_id: string
+          hardware_id?: string
+          id?: string
+          metadata?: Json
+          provider: string
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          external_account_id?: string
+          hardware_id?: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      provider_link_claims: {
+        Row: {
+          access_token: string
+          claimed_at: string | null
+          created_at: string
+          expires_at: string
+          external_account_id: string
+          hardware_id: string
+          id: string
+          metadata: Json
+          provider: string
+          refresh_token: string
+          scopes: Json
+          token_expires_at: string | null
+        }
+        Insert: {
+          access_token: string
+          claimed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          external_account_id: string
+          hardware_id: string
+          id?: string
+          metadata?: Json
+          provider: string
+          refresh_token: string
+          scopes?: Json
+          token_expires_at?: string | null
+        }
+        Update: {
+          access_token?: string
+          claimed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          external_account_id?: string
+          hardware_id?: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          refresh_token?: string
+          scopes?: Json
+          token_expires_at?: string | null
+        }
+        Relationships: []
+      }
+      provider_webhook_events: {
+        Row: {
+          event_id: string
+          event_type: string
+          payload: Json
+          provider: string
+          published_at: string | null
+          received_at: string
+        }
+        Insert: {
+          event_id: string
+          event_type: string
+          payload: Json
+          provider: string
+          published_at?: string | null
+          received_at?: string
+        }
+        Update: {
+          event_id?: string
+          event_type?: string
+          payload?: Json
+          provider?: string
+          published_at?: string | null
+          received_at?: string
+        }
+        Relationships: []
+      }
+      smart_home_devices: {
+        Row: {
+          capabilities: Json
+          connection_id: string
+          created_at: string
+          external_device_id: string
+          id: string
+          kind: string
+          last_seen_at: string | null
+          location: string
+          metadata: Json
+          model: string
+          name: string
+          provider: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          capabilities?: Json
+          connection_id: string
+          created_at?: string
+          external_device_id: string
+          id?: string
+          kind: string
+          last_seen_at?: string | null
+          location?: string
+          metadata?: Json
+          model?: string
+          name: string
+          provider: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          capabilities?: Json
+          connection_id?: string
+          created_at?: string
+          external_device_id?: string
+          id?: string
+          kind?: string
+          last_seen_at?: string | null
+          location?: string
+          metadata?: Json
+          model?: string
+          name?: string
+          provider?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_home_devices_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "provider_connections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
